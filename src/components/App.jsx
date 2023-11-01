@@ -37,9 +37,21 @@ export const App = () => {
   // }
   useEffect(() => {
     if (query !== '') {
+      async function search() {
+        setIsLoading(true);
+        try {
+          const response = await fetchPhotoes(query, page);
+
+          setImages(prev => [...prev, ...response]);
+        } catch (error) {
+          setError(error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
       search();
     }
-  }, [page, query]);
+  }, [page, query, images]);
   const formHandler = event => {
     event.preventDefault();
     const query = event.target.queryInput.value.trim();
@@ -51,18 +63,18 @@ export const App = () => {
       return;
     }
   };
-  async function search() {
-    setIsLoading(true);
-    try {
-      const response = await fetchPhotoes(query, page);
+  // async function search() {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await fetchPhotoes(query, page);
 
-      setImages([...images, ...response]);
-    } catch (error) {
-      setError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  //     setImages([...images, ...response]);
+  //   } catch (error) {
+  //     setError(error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }
   const galleryHandler = event => {
     if (event.target.nodeName === 'LI' || event.target.nodeName === 'IMG') {
       // this.setState({ actionID: Number(event.target.id), modalOpen: true });
