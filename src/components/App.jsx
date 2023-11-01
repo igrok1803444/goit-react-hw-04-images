@@ -17,52 +17,35 @@ export const App = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [actionID, setActionID] = useState(null);
 
-  // async componentDidUpdate(_, prevState) {
-  //   if (
-  //     prevState.page !== this.state.page ||
-  //     prevState.query !== this.state.query
-  //   ) {
-  //     this.setState({ isLoading: true });
-  //     try {
-  //       const response = await fetchPhotoes(this.state.query, this.state.page);
-  //       this.setState(prevState => ({
-  //         images: [...prevState.images, ...response],
-  //       }));
-  //     } catch (error) {
-  //       this.setState({ error });
-  //     } finally {
-  //       this.setState({ isLoading: false });
-  //     }
-  //   }
-  // }
   useEffect(() => {
     if (query !== '') {
+      async function search() {
+        setIsLoading(true);
+        try {
+          const response = await fetchPhotoes(query, page);
+
+          setImages(prev => [...prev, ...response]);
+        } catch (error) {
+          setError(error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
       search();
     }
-  }, [page, query, images]);
+  }, [page, query]);
   const formHandler = event => {
     event.preventDefault();
-    const query = event.target.queryInput.value.trim();
-    if (query !== '') {
-      setQuery(query);
+    const queryForm = event.target.queryInput.value.trim();
+    if (queryForm !== '' && queryForm !== query) {
+      setQuery(queryForm);
       setPage(1);
       setImages([]);
     } else {
       return;
     }
   };
-  async function search() {
-    setIsLoading(true);
-    try {
-      const response = await fetchPhotoes(query, page);
 
-      setImages(prev => [...prev, ...response]);
-    } catch (error) {
-      setError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
   const galleryHandler = event => {
     if (event.target.nodeName === 'LI' || event.target.nodeName === 'IMG') {
       // this.setState({ actionID: Number(event.target.id), modalOpen: true });
